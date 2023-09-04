@@ -1,7 +1,7 @@
 package io.tokend.certificates.feature.home.view
 
-import android.content.pm.ActivityInfo
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentManager
 import io.tokend.certificates.R
@@ -15,9 +15,9 @@ class HomeActivity : BaseActivity() {
         binding.lifecycleOwner = this
         initStartFragment()
         initNavigationBar()
-        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        supportActionBar?.hide()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
-
 
     private fun initNavigationBar() {
         binding.bottomNavigationView.setOnItemSelectedListener {

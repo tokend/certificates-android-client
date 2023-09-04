@@ -1,7 +1,5 @@
 package io.tokend.certificates.feature.info.view
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,22 +37,15 @@ class InfoFragment : BaseFragment() {
         binding.dateTextView.text = date
         binding.isConfirmed = isConfirmed
         initButtons()
-        initLink()
         return binding.root
     }
 
-    private fun initLink() {
-        if (certificate.certificatePage!!.isEmpty()) {
-            binding.certificationContainer.visibility = View.GONE
-        }
-    }
 
     private fun initButtons() {
         clickHelper.addViews(
             binding.backButton,
             binding.shareButton,
             binding.copyButton,
-            binding.linkTextView
         )
 
         clickHelper.setOnClickListener {
@@ -69,14 +60,6 @@ class InfoFragment : BaseFragment() {
                 binding.copyButton.id -> {
                     clipboardHelper.copyText(certificate.toString())
                     toastManager.short(getString(R.string.copied))
-                }
-                binding.linkTextView.id -> {
-                    if (certificate.certificatePage!!.isEmpty())
-                        return@setOnClickListener
-                    val uri: Uri =
-                        Uri.parse(certificate.certificatePage)
-                    val intent = Intent(Intent.ACTION_VIEW, uri)
-                    startActivity(Intent.createChooser(intent, "Browse with"));
                 }
             }
         }

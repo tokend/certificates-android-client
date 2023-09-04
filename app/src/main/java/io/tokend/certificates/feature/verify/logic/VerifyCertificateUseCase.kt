@@ -1,5 +1,6 @@
 package io.tokend.certificates.feature.verify.logic
 
+import android.annotation.SuppressLint
 import com.google.gson.Gson
 import io.reactivex.Single
 import io.tokend.certificates.BuildConfig
@@ -13,6 +14,8 @@ import org.bitcoinj.core.Base58
 import org.bitcoinj.core.ECKey.signedMessageToKey
 import org.bitcoinj.core.NetworkParameters
 import org.bitcoinj.script.Script
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class VerifyCertificateUseCase(private val apiProvider: ApiProvider) {
@@ -65,6 +68,9 @@ class VerifyCertificateUseCase(private val apiProvider: ApiProvider) {
                 }
             }
 
+
+
+
             //NOT_FOUND
             if (networkCertificate == null) {
                 return@fromCallable false
@@ -80,6 +86,12 @@ class VerifyCertificateUseCase(private val apiProvider: ApiProvider) {
 
             val transaction = gson.fromJson(json, Transaction::class.java)
 
+
+            if (!isWithinOneMonth(networkCertificate.date, transaction.time)) {
+                return@fromCallable false
+            }
+
+
             for (item in transaction.out) {
                 if (item.addr == null) {
                     val encodedScript = item.script.decodeHex().drop(3)
@@ -90,5 +102,24 @@ class VerifyCertificateUseCase(private val apiProvider: ApiProvider) {
 
             return@fromCallable false
         }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    fun isWithinOneMonth(networkCertificateDateStr: String, transactionTimeStr: String): Boolean {
+        val dateFormat = SimpleDateFormat("dd.MM.yyyy")
+        val date = dateFormat.parse(networkCertificateDateStr)
+
+        val unixNetworkCertificateDate  = date.time / 1000
+        val unixTransactionTime = transactionTimeStr.toLong()
+
+        if(unixNetworkCertificateDate > unixTransactionTime - MONTH_SECONDS && unixNetworkCertificateDate < unixTransactionTime + MONTH_SECONDS) {
+            return true
+        }
+
+        return false
+    }
+
+    companion object {
+        const val MONTH_SECONDS = 2_592_000
     }
 }

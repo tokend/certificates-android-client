@@ -19,6 +19,7 @@
         android:supportsRtl="true"
 
         android:theme="@style/Theme.Certificates.Launch"
+
         tools:targetApi="31">
 
         <activity
